@@ -1,7 +1,7 @@
 // main.c
-// CWR_SZ project
+// ccr3 project
 
-// Created by Song Junlin on 3/21/2019
+// Created by Song Junlin on 4/28/2019
 // Copyright 2019 IRIM, Inc. All right reserved.
 //
 /*-------------------------------Includes-------------------------------*/
@@ -9,6 +9,7 @@
 #include "delay.h"
 #include "led.h"
 #include "sys.h"
+#include "can.h"
 
 /*FreeRTOS*/
 #include "FreeRTOS.h"
@@ -17,16 +18,11 @@
 /*FreeModbus*/
 #include "FreeModbus.h"
 
-/*robot*/
-
 /*--------------------------------TASK---------------------------------*/
-//任务优先级
+
 #define START_TASK_PRIO 1
-//任务堆栈大小
 #define START_STK_SIZE 128
-//任务句柄
 TaskHandle_t StartTask_Handler;
-//任务函数
 void start_task(void *pvParameters);
 
 #define Modbus_TASK_PRIO 5
@@ -34,32 +30,32 @@ void start_task(void *pvParameters);
 TaskHandle_t ModbusTask_Handler;
 void Modbus_task(void *pvParameters);
 
+#define CanTest_TASK_PRIO 4
+#define CanTest_STK_SIZE 256
+TaskHandle_t CanTestTask_Handler;
+void CanTest_task(void *pvParameters);
+
 /*----------------------------Start Implemention-------------------------*/
 
 int main()
 {
-
-  //设置系统中断优先级分组4
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
   LED_Init();
 
-  //创建开始任务
-  xTaskCreate((TaskFunction_t)start_task,          //任务函数
-              (const char *)"start_task",          //任务名称
-              (uint16_t)START_STK_SIZE,            //任务堆栈大小
-              (void *)NULL,                        //传递给任务函数的参数
-              (UBaseType_t)START_TASK_PRIO,        //任务优先级
-              (TaskHandle_t *)&StartTask_Handler); //任务句柄
-  vTaskStartScheduler();                           //开启任务调度
+  xTaskCreate((TaskFunction_t)start_task,
+              (const char *)"start_task",
+              (uint16_t)START_STK_SIZE,
+              (void *)NULL,
+              (UBaseType_t)START_TASK_PRIO,
+              (TaskHandle_t *)&StartTask_Handler);
+  vTaskStartScheduler();
   return 0;
 }
 
-/*------------------------------TASK Functions------------------------------*/
-
-//开始任务任务函数
+/*------------------------------TASK Functions----------------------------*/
 void start_task(void *pvParameters)
 {
-  //进入临界区
+
   taskENTER_CRITICAL();
 
   // creat modbus task
@@ -67,9 +63,14 @@ void start_task(void *pvParameters)
               (uint16_t)Modbus_STK_SIZE, (void *)NULL,
               (UBaseType_t)Modbus_TASK_PRIO,
               (TaskHandle_t *)&ModbusTask_Handler);
+  // CAN test
+  xTaskCreate((TaskFunction_t)CanTest_task, (const char *)"CanTest_task",
+              (uint16_t)CanTest_STK_SIZE, (void *)NULL,
+              (UBaseType_t)CanTest_TASK_PRIO,
+              (TaskHandle_t *)&CanTestTask_Handler);
 
-  vTaskDelete(StartTask_Handler); //删除开始任务
-  taskEXIT_CRITICAL();            //退出临界区
+  vTaskDelete(StartTask_Handler);
+  taskEXIT_CRITICAL();
 }
 // Modbus task
 void Modbus_task(void *pvParameters)
@@ -80,6 +81,46 @@ void Modbus_task(void *pvParameters)
   while (1)
   {
     eMBPoll();
+    vTaskDelay(50);
+  }
+}
+
+// CAN test task
+void CanTest_task(void *pvParameters)
+{
+  // CAN Init
+  CanInit();
+
+  // Start Node
+  NMT_Start(0);
+  // Enter Pre-Operational
+  // NMT_PreSTA(0);
+
+  // Set operation mode,velocity
+  // Sdo_WrU8(1, 0x6060, 0, 0x03);
+
+  // Set parameter
+  Sdo_WrU32(1, 0x6083, 0, 10000);
+  delay_ms(2);
+  Sdo_WrU32(1, 0x6084, 0, 10000);
+  delay_ms(2);
+  Sdo_WrU32(1, 0x6085, 0, 10000);
+  delay_ms(2);
+
+  // // Enable device
+  // Sdo_WrU16(1, 0x6040, 0, 0x000F);
+
+  // // Set target velocity
+  // Sdo_WrU32(1, 0x60FF, 0, 20000);
+
+  // // Start move
+  // Sdo_WrU16(1, 0x6040, 0, 0x000F);
+
+  // StartMotor(1);
+
+  while (1)
+  {
+    SetMotorCtrlword(1, 0x000F);
     vTaskDelay(50);
   }
 }

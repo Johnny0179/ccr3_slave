@@ -79,8 +79,8 @@ u8 CAN1_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 mode)
     CAN_ITConfig(CAN1, CAN_IT_TME, ENABLE); // FIFO0消息挂号中断允许.
     // 后面有空配置一下发送邮箱为空的中断。
     NVIC_InitStructure.NVIC_IRQChannel = CAN1_TX_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; // 主优先级为1
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;        // 次优先级为0
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2; // 主优先级为2
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;        // 次优先级为0
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 #endif
@@ -96,10 +96,9 @@ void CAN1_RX0_IRQHandler(void)
     if (CAN_GetITStatus(CAN1, CAN_IT_FMP0) != RESET)
     {
         CAN_Receive(CAN1, 0, &RxMessage);
-        canDispatch(&RxMessage);
+        // canDispatch(&RxMessage);
         CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
     }
-
 }
 
 #if 1
@@ -109,7 +108,6 @@ void CAN1_TX_IRQHandler(void)
     {
         CAN_ClearITPendingBit(CAN1, CAN_IT_TME);
     }
-
 }
 #endif
 
@@ -163,22 +161,168 @@ u8 CAN1_Send_Frame(u16 CobId, u8 Rtr, u8 Len, u8 *msg)
 
 u8 CAN1_Receive_Msg(u8 *buf)
 {
-  u32 i;
-  CanRxMsg RxMessage;
-  if (CAN_MessagePending(CAN1, CAN_FIFO0) == 0)
-    return 0; //没有接收到数据,直接退出
+    u32 i;
+    CanRxMsg RxMessage;
+    if (CAN_MessagePending(CAN1, CAN_FIFO0) == 0)
+        return 0; //没有接收到数据,直接退出
 
-  // printf("rx data!");
-  CAN_Receive(CAN1, CAN_FIFO0, &RxMessage); //读取数据
-  for (i = 0; i < RxMessage.DLC; i++)
-    buf[i] = RxMessage.Data[i];
-  return RxMessage.DLC;
+    // printf("rx data!");
+    CAN_Receive(CAN1, CAN_FIFO0, &RxMessage); //读取数据
+    for (i = 0; i < RxMessage.DLC; i++)
+        buf[i] = RxMessage.Data[i];
+    return RxMessage.DLC;
 }
 
 void CanInit(void)
 {
-  CAN1_Mode_Init(CAN_SJW_1tq, CAN_BS2_6tq, CAN_BS1_7tq, CAN_BAUD_1Mbps_brp,
-                 CAN_Mode_Normal); // brp 需设置
-  sem_SrvCAN_tx = OSSemCreate(3);
-  sem_SrvCAN_rx = OSSemCreate(0);
+    CAN1_Mode_Init(CAN_SJW_1tq, CAN_BS2_6tq, CAN_BS1_7tq, CAN_BAUD_1Mbps_brp,
+                   CAN_Mode_Normal); // brp 需设置
+}
+
+//写4字节
+u8 Sdo_WrU32(u8 SlaveID, u16 index, u8 subindex, u32 data)
+{
+    u8 msg[8];
+    msg[0] = 0x23; //区别在这里
+    msg[1] = index & 0xff;
+    msg[2] = (index >> 8) & 0xff;
+    msg[3] = subindex;
+    msg[4] = data & 0xff;
+    msg[5] = (data >> 8) & 0xff;
+    msg[6] = (data >> 16) & 0xff;
+    msg[7] = (data >> 24) & 0xff;
+    return CAN1_Send_Frame((SDOrx + SlaveID), 0, 8,
+                           msg); // SDOrx为0x600,这个主要是对主站来说,所以用0x600
+}
+
+//写2字节
+u8 Sdo_WrU16(u8 SlaveID, u16 index, u8 subindex, u32 data)
+{
+    u8 msg[8];
+    msg[0] = 0x2B; //区别在这里
+    msg[1] = index & 0xff;
+    msg[2] = (index >> 8) & 0xff;
+    msg[3] = subindex;
+    msg[4] = data & 0xff;
+    msg[5] = (data >> 8) & 0xff;
+    msg[6] = msg[7] = 0;
+    return CAN1_Send_Frame((SDOrx + SlaveID), 0, 8,
+                           msg); // SDOrx为0x600,这个主要是对主站来说,所以用0x600
+}
+
+//写1字节
+u8 Sdo_WrU8(u8 SlaveID, u16 index, u8 subindex, u32 data)
+{
+    u8 msg[8];
+    msg[0] = 0x2F; //区别在这里
+    msg[1] = index & 0xff;
+    msg[2] = (index >> 8) & 0xff;
+    msg[3] = subindex;
+    msg[4] = data & 0xff;
+    msg[5] = msg[6] = msg[7] = 0;
+    return CAN1_Send_Frame(
+        (SDOrx + SlaveID), 0, 8,
+        msg); // SDOrx为0x600,这个主要是对主站来说,所以用0x600 ,从站应答
+}
+
+u8 NMT_Start(u8 SlaveID)
+{
+    u8 msg[8];
+    msg[0] = NMT_Start_Node;
+    msg[1] = SlaveID;
+    return CAN1_Send_Frame(NMT, 0, 2, msg);
+}
+
+u8 NMT_Stop(u8 SlaveID)
+{
+    u8 msg[8];
+    msg[0] = NMT_Stop_Node;
+    msg[1] = SlaveID;
+    return CAN1_Send_Frame(NMT, 0, 2, msg);
+}
+
+u8 NMT_PreSTA(u8 SlaveID)
+{
+    u8 msg[8];
+    msg[0] = NMT_Enter_PreOperational;
+    msg[1] = SlaveID;
+    return CAN1_Send_Frame(NMT, 0, 2, msg);
+}
+
+u8 NMT_RstNode(u8 SlaveID)
+{
+    u8 msg[8];
+    msg[0] = NMT_Reset_Node;
+    msg[1] = SlaveID;
+    return CAN1_Send_Frame(NMT, 0, 2, msg);
+}
+
+u8 NMT_RstComm(u8 SlaveID)
+{
+    u8 msg[8];
+    msg[0] = NMT_Reset_Comunication;
+    msg[1] = SlaveID;
+    return CAN1_Send_Frame(NMT, 0, 2, msg);
+}
+
+u8 SetMotorCtrlword(u8 SlaveID, u16 Ctrlword)
+{
+    return TX_PDO1(SlaveID, Ctrlword);
+}
+
+u8 TX_PDO1(u8 SlaveID, u16 CtrlWord)
+{
+    //控制字CtrlWord
+    u8 msg[8];
+    msg[0] = CtrlWord & 0xff;
+    msg[1] = (CtrlWord >> 8) & 0xff;
+    return CAN1_Send_Frame((PDO1rx + SlaveID), 0, 2, msg); //	PDO1Rx 为 0x200,
+}
+
+u8 TX_PDO2(u8 SlaveID, u16 CtrlWord, u32 pos)
+{
+    //控制字CtrlWord与位置POS_Set
+    u8 msg[8];
+    msg[0] = (CtrlWord)&0xff;
+    msg[1] = (CtrlWord >> 8) & 0xff;
+
+    msg[2] = (pos)&0xff;
+    msg[3] = (pos >> 8) & 0xff;
+    msg[4] = (pos >> 16) & 0xff;
+    msg[5] = (pos >> 24) & 0xff;
+
+    return CAN1_Send_Frame((PDO2rx + SlaveID), 0, 6, msg);
+}
+
+u8 TX_PDO3(u8 SlaveID, u32 speed)
+{
+    //速度
+    u8 msg[8];
+    msg[0] = (speed) & 0xff;
+    msg[1] = (speed >> 8) & 0xff;
+    msg[2] = (speed >> 16) & 0xff;
+    msg[3] = (speed >> 24) & 0xff;
+
+    return CAN1_Send_Frame((PDO3rx + SlaveID), 0, 4, msg);
+}
+
+u8 TX_PDO4(u8 SlaveID, u16 max_current_limit)
+{
+  //最大电流限制
+  u8 msg[8];
+
+  msg[0] = (max_current_limit) & 0xff;
+  msg[1] = (max_current_limit >> 8) & 0xff;
+  msg[2] = 0; 
+  msg[3] = 0; 
+
+  return CAN1_Send_Frame((PDO4rx + SlaveID), 0, 4, msg);
+}
+
+void StartMotor(u8 SlaveID)
+{
+
+    SetMotorCtrlword(SlaveID, 0x0006);
+    delay_us(2000);
+    SetMotorCtrlword(SlaveID, 0x000F);
 }

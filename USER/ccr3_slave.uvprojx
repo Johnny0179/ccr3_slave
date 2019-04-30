@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>CWR_SZ</TargetName>
+      <TargetName>ccr3</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <TargetOption>
@@ -45,7 +45,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>..\OBJ\</OutputDirectory>
-          <OutputName>cwr_sz</OutputName>
+          <OutputName>ccr3</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -364,7 +364,7 @@
               <MiscControls>--exceptions</MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\USER;..\SYSTEM\delay;..\SYSTEM\sys;..\HARDWARE\LED;..\FreeRTOS\include;..\FreeRTOS\portable\RVDS\ARM_CM4F;..\FreeModbus\port;..\FreeModbus\modbus\rtu;..\FreeModbus\modbus\include;..\FreeModbus\modbus\ascii;..\FreeModbus;..\FWLIB\inc</IncludePath>
+              <IncludePath>..\CORE;..\USER;..\SYSTEM\delay;..\SYSTEM\sys;..\HARDWARE\LED;..\FreeRTOS\include;..\FreeRTOS\portable\RVDS\ARM_CM4F;..\FreeModbus\port;..\FreeModbus\modbus\rtu;..\FreeModbus\modbus\include;..\FreeModbus\modbus\ascii;..\FreeModbus;..\FWLIB\inc;..\HARDWARE\CAN</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -641,6 +641,16 @@
               <FileName>FreeModbus.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\FreeModbus.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>CAN</GroupName>
+          <Files>
+            <File>
+              <FileName>can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\CAN\can.c</FilePath>
             </File>
           </Files>
         </Group>
