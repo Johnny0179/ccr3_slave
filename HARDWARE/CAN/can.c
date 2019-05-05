@@ -298,7 +298,7 @@ u8 TX_PDO3(u8 SlaveID, u32 speed)
 {
     //速度
     u8 msg[8];
-    msg[0] = (speed) & 0xff;
+    msg[0] = (speed)&0xff;
     msg[1] = (speed >> 8) & 0xff;
     msg[2] = (speed >> 16) & 0xff;
     msg[3] = (speed >> 24) & 0xff;
@@ -306,23 +306,41 @@ u8 TX_PDO3(u8 SlaveID, u32 speed)
     return CAN1_Send_Frame((PDO3rx + SlaveID), 0, 4, msg);
 }
 
-u8 TX_PDO4(u8 SlaveID, u16 max_current_limit)
+// u8 TX_PDO4(u8 SlaveID, u16 max_current_limit)
+// {
+//     //最大电流限制
+//     u8 msg[8];
+
+//     msg[0] = (max_current_limit)&0xff;
+//     msg[1] = (max_current_limit >> 8) & 0xff;
+//     msg[2] = 0;
+//     msg[3] = 0;
+
+//     return CAN1_Send_Frame((PDO4rx + SlaveID), 0, 4, msg);
+// }
+
+u8 TX_PDO4(u8 SlaveID, u8 mode)
 {
-  //最大电流限制
-  u8 msg[8];
+    
+    u8 msg[8];
 
-  msg[0] = (max_current_limit) & 0xff;
-  msg[1] = (max_current_limit >> 8) & 0xff;
-  msg[2] = 0; 
-  msg[3] = 0; 
+    msg[0] = mode;
 
-  return CAN1_Send_Frame((PDO4rx + SlaveID), 0, 4, msg);
+    return CAN1_Send_Frame((PDO4rx + SlaveID), 0, 1, msg);
 }
 
 void StartMotor(u8 SlaveID)
 {
 
     SetMotorCtrlword(SlaveID, 0x0006);
-    delay_us(2000);
+    delay_ms(200);
     SetMotorCtrlword(SlaveID, 0x000F);
+}
+
+// 4.RPDO,主站读从站数据，用RTR方式，不用主动上报方式，主要原因，总线上挂7个电机比较多，若主动上报，不成功导致重复发送的概率大,而且不是每个时刻，都需要知道每个电机的状态，
+u8 RX_PDO1(u8 SlaveID)
+{ //还需要等待接收,接收放在中断里
+    return CAN1_Send_Frame(
+        (PDO1tx + SlaveID), 1, 0,
+        (void *)NULL); //注意,RTR 为 1，请求帧 。PDO1tx 为 0x180,
 }

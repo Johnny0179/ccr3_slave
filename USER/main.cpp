@@ -42,6 +42,9 @@ int main()
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
   LED_Init();
 
+  // init the system delay
+  delay_init(168);
+
   xTaskCreate((TaskFunction_t)start_task,
               (const char *)"start_task",
               (uint16_t)START_STK_SIZE,
@@ -91,36 +94,21 @@ void CanTest_task(void *pvParameters)
   // CAN Init
   CanInit();
 
+  // wait EPSO4 to init
+  delay_ms(5000);
+
   // Start Node
   NMT_Start(0);
-  // Enter Pre-Operational
-  // NMT_PreSTA(0);
-
-  // Set operation mode,velocity
-  // Sdo_WrU8(1, 0x6060, 0, 0x03);
-
-  // Set parameter
-  Sdo_WrU32(1, 0x6083, 0, 10000);
-  delay_ms(2);
-  Sdo_WrU32(1, 0x6084, 0, 10000);
-  delay_ms(2);
-  Sdo_WrU32(1, 0x6085, 0, 10000);
-  delay_ms(2);
-
-  // // Enable device
-  // Sdo_WrU16(1, 0x6040, 0, 0x000F);
-
-  // // Set target velocity
-  // Sdo_WrU32(1, 0x60FF, 0, 20000);
-
-  // // Start move
-  // Sdo_WrU16(1, 0x6040, 0, 0x000F);
 
   // StartMotor(1);
 
+  delay_ms(2);
+  SetMotorCtrlword(1, 0x0006);
+  delay_ms(2);
+  SetMotorCtrlword(1, 0x000F);
+
   while (1)
   {
-    SetMotorCtrlword(1, 0x000F);
-    vTaskDelay(50);
+    vTaskDelay(5000);
   }
 }

@@ -21,7 +21,7 @@
   </DaveTm>
 
   <Target>
-    <TargetName>CWR_SZ</TargetName>
+    <TargetName>ccr3</TargetName>
     <ToolsetNumber>0x4</ToolsetNumber>
     <ToolsetName>ARM-ADS</ToolsetName>
     <TargetOption>

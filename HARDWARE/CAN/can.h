@@ -48,31 +48,35 @@ extern "C"
 #define Rd_SPD_POS RX_PDO3
 #define Rd_STA_ERR_TRQ_MODE RX_PDO4
 
-    //CAN初�?�化
-    u8 CAN1_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 mode);
-    //发送数�?
-    u8 CAN1_Send_Frame(u16 CobId, u8 Rtr, u8 Len, u8 *msg);
-    //接收数据
-    u8 CAN1_Receive_Msg(u8 *buf);
-    void CanInit(void);
+#define NULL ((void *)0)
+  //CAN初�?�化
+  u8 CAN1_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 mode);
+  //发送数�?
+  u8 CAN1_Send_Frame(u16 CobId, u8 Rtr, u8 Len, u8 *msg);
+  //接收数据
+  u8 CAN1_Receive_Msg(u8 *buf);
+  void CanInit(void);
 
-    u8 Sdo_WrU32(u8 SlaveID, u16 index, u8 subindex, u32 data);
-    u8 Sdo_WrU16(u8 SlaveID, u16 index, u8 subindex, u32 data);
-    u8 Sdo_WrU8(u8 SlaveID, u16 index, u8 subindex, u32 data);
+  u8 Sdo_WrU32(u8 SlaveID, u16 index, u8 subindex, u32 data);
+  u8 Sdo_WrU16(u8 SlaveID, u16 index, u8 subindex, u32 data);
+  u8 Sdo_WrU8(u8 SlaveID, u16 index, u8 subindex, u32 data);
 
-    u8 NMT_Start(u8 SlaveID);
-    u8 NMT_Stop(u8 SlaveID);
-    u8 NMT_PreSTA(u8 SlaveID);
-    u8 NMT_RstNode(u8 SlaveID);
-    u8 NMT_RstComm(u8 SlaveID);
+  u8 NMT_Start(u8 SlaveID);
+  u8 NMT_Stop(u8 SlaveID);
+  u8 NMT_PreSTA(u8 SlaveID);
+  u8 NMT_RstNode(u8 SlaveID);
+  u8 NMT_RstComm(u8 SlaveID);
 
-    u8 SetMotorCtrlword(u8 SlaveID, u16 Ctrlword);
-    u8 TX_PDO1(u8 SlaveID,u16 CtrlWord);
-    u8 TX_PDO2(u8 SlaveID, u16 CtrlWord, u32 pos);
-    u8 TX_PDO3(u8 SlaveID, u32 speed);
-    u8 TX_PDO4(u8 SlaveID, u16 max_current_limit);
-    
-    void StartMotor(u8 SlaveID);
+  u8 SetMotorCtrlword(u8 SlaveID, u16 Ctrlword);
+  u8 TX_PDO1(u8 SlaveID, u16 CtrlWord);
+  u8 TX_PDO2(u8 SlaveID, u16 CtrlWord, u32 pos);
+  u8 TX_PDO3(u8 SlaveID, u32 speed);
+  // u8 TX_PDO4(u8 SlaveID, u16 max_current_limit);
+
+  u8 TX_PDO4(u8 SlaveID, u8 mode);
+
+  u8 RX_PDO1(u8 SlaveID);
+  void StartMotor(u8 SlaveID);
 
 // support cpp
 #ifdef __cplusplus

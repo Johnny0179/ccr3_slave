@@ -40,34 +40,34 @@ extern "C"
 
 //IOï¿½Ú²ï¿½ï¿½ï¿½,Ö»ï¿½Ôµï¿½Ò»ï¿½ï¿½IOï¿½ï¿½!
 //È·ï¿½ï¿½nï¿½ï¿½ÖµÐ¡ï¿½ï¿½16!
-#define PAout(n) BIT_ADDR(GPIOA_ODR_Addr, n) //ï¿½ï¿½ï¿½?
+#define PAout(n) BIT_ADDR(GPIOA_ODR_Addr, n) //ï¿½ï¿½ï¿??
 #define PAin(n) BIT_ADDR(GPIOA_IDR_Addr, n)  //ï¿½ï¿½ï¿½ï¿½
 
-#define PBout(n) BIT_ADDR(GPIOB_ODR_Addr, n) //ï¿½ï¿½ï¿½?
+#define PBout(n) BIT_ADDR(GPIOB_ODR_Addr, n) //ï¿½ï¿½ï¿??
 #define PBin(n) BIT_ADDR(GPIOB_IDR_Addr, n)  //ï¿½ï¿½ï¿½ï¿½
 
-#define PCout(n) BIT_ADDR(GPIOC_ODR_Addr, n) //ï¿½ï¿½ï¿½?
+#define PCout(n) BIT_ADDR(GPIOC_ODR_Addr, n) //ï¿½ï¿½ï¿??
 #define PCin(n) BIT_ADDR(GPIOC_IDR_Addr, n)  //ï¿½ï¿½ï¿½ï¿½
 
-#define PDout(n) BIT_ADDR(GPIOD_ODR_Addr, n) //ï¿½ï¿½ï¿½?
+#define PDout(n) BIT_ADDR(GPIOD_ODR_Addr, n) //ï¿½ï¿½ï¿??
 #define PDin(n) BIT_ADDR(GPIOD_IDR_Addr, n)  //ï¿½ï¿½ï¿½ï¿½
 
-#define PEout(n) BIT_ADDR(GPIOE_ODR_Addr, n) //ï¿½ï¿½ï¿½?
+#define PEout(n) BIT_ADDR(GPIOE_ODR_Addr, n) //ï¿½ï¿½ï¿??
 #define PEin(n) BIT_ADDR(GPIOE_IDR_Addr, n)  //ï¿½ï¿½ï¿½ï¿½
 
-#define PFout(n) BIT_ADDR(GPIOF_ODR_Addr, n) //ï¿½ï¿½ï¿½?
+#define PFout(n) BIT_ADDR(GPIOF_ODR_Addr, n) //ï¿½ï¿½ï¿??
 #define PFin(n) BIT_ADDR(GPIOF_IDR_Addr, n)  //ï¿½ï¿½ï¿½ï¿½
 
-#define PGout(n) BIT_ADDR(GPIOG_ODR_Addr, n) //ï¿½ï¿½ï¿½?
+#define PGout(n) BIT_ADDR(GPIOG_ODR_Addr, n) //ï¿½ï¿½ï¿??
 #define PGin(n) BIT_ADDR(GPIOG_IDR_Addr, n)  //ï¿½ï¿½ï¿½ï¿½
 
-#define PHout(n) BIT_ADDR(GPIOH_ODR_Addr, n) //ï¿½ï¿½ï¿½?
+#define PHout(n) BIT_ADDR(GPIOH_ODR_Addr, n) //ï¿½ï¿½ï¿??
 #define PHin(n) BIT_ADDR(GPIOH_IDR_Addr, n)  //ï¿½ï¿½ï¿½ï¿½
 
-#define PIout(n) BIT_ADDR(GPIOI_ODR_Addr, n) //ï¿½ï¿½ï¿½?
+#define PIout(n) BIT_ADDR(GPIOI_ODR_Addr, n) //ï¿½ï¿½ï¿??
 #define PIin(n) BIT_ADDR(GPIOI_IDR_Addr, n)  //ï¿½ï¿½ï¿½ï¿½
 
-    //ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½?ï¿½ï¿½
+    //ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿??ï¿½ï¿½
     void WFI_SET(void);      //Ö´ï¿½ï¿½WFIÖ¸ï¿½ï¿½
     void INTX_DISABLE(void); //ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
     void INTX_ENABLE(void);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
