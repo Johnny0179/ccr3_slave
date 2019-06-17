@@ -508,9 +508,9 @@
           <GroupName>HARDWARE</GroupName>
           <Files>
             <File>
-              <FileName>led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\LED\led.c</FilePath>
+              <FileName>led.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\HARDWARE\LED\led.cpp</FilePath>
             </File>
           </Files>
         </Group>

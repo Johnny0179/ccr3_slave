@@ -35,12 +35,16 @@ void Modbus_task(void *pvParameters);
 TaskHandle_t CanTestTask_Handler;
 void CanTest_task(void *pvParameters);
 
+#define LED_TASK_PRIO 3
+#define LED_STK_SIZE 50
+TaskHandle_t LEDTask_Handler;
+void LED_task(void *pvParameters);
+
 /*----------------------------Start Implemention-------------------------*/
 
 int main()
 {
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-  LED_Init();
 
   // init the system delay
   delay_init(168);
@@ -71,6 +75,12 @@ void start_task(void *pvParameters)
               (uint16_t)CanTest_STK_SIZE, (void *)NULL,
               (UBaseType_t)CanTest_TASK_PRIO,
               (TaskHandle_t *)&CanTestTask_Handler);
+
+  // LED test
+  xTaskCreate((TaskFunction_t)LED_task, (const char *)"LED_task",
+              (uint16_t)LED_STK_SIZE, (void *)NULL,
+              (UBaseType_t)LED_TASK_PRIO,
+              (TaskHandle_t *)&LEDTask_Handler);
 
   vTaskDelete(StartTask_Handler);
   taskEXIT_CRITICAL();
@@ -110,5 +120,20 @@ void CanTest_task(void *pvParameters)
   while (1)
   {
     vTaskDelay(5000);
+  }
+}
+
+void LED_task(void *pvParameters)
+{
+  // class led
+  led LED;
+  
+  LED.init();
+
+  while (1)
+  {
+    LED.blink(0);
+    LED.blink(1);
+    vTaskDelay(500);
   }
 }

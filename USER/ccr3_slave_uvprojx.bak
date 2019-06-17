@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>ccr3</TargetName>
+      <TargetName>ccr3_slave</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <TargetOption>

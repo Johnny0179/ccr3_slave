@@ -1,23 +1,25 @@
 #ifndef __LED_H
 #define __LED_H
 
-// support cpp
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
+#include "stm32f4xx.h"
 #include "sys.h"
-//LED端口定义
-#define LED0 PEout(2)
-#define LED1 PEout(3)
-#define LED2 PFout(9)
 
-    //函数声明
-    void LED_Init(void); //初始化
+class led
+{
+private:
+    /* data */
 
-#ifdef __cplusplus
-}
-#endif
+    // led number
+    static const u8 kled0 = 0;
+    static const u8 kled1 = 1;
+
+public:
+    led(/* args */);
+    ~led();
+    void init(void);
+    void on(u8 led_no);
+    void off(u8 led_no);
+    void blink(u8 led_no);
+};
 
 #endif
